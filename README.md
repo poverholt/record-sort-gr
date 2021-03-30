@@ -2,12 +2,14 @@
 
 A system to parse and sort a set of records.
 
-## Step 1 - Build a system to parse and sort a set of records
+## Requirements
+
+### Step 1 - Build a system to parse and sort a set of records
 
 Create a command line app that takes as input a file with a set of records in one of three formats
 described below, and outputs (to the screen) the set of records sorted in one of three ways.
 
-### Input
+#### Input
 
 A record consists of the following 5 fields: last name, first name, gender, date of birth and favorite
 color. The input is 3 files, each containing records stored in a different format. You may generate
@@ -24,7 +26,7 @@ You may assume that the delimiters (commas, pipes and spaces) do not appear anyw
 data values themselves. Write a program in a language of your choice to read in records from these
 files and combine them into a single set of records.
 
-### Output
+#### Output
 
 Create and display 3 different views of the data you read in:
 
@@ -34,7 +36,7 @@ Create and display 3 different views of the data you read in:
 
 Display dates in the format M/D/YYYY.
 
-## Step 2 - Build a REST API to access your system
+### Step 2 - Build a REST API to access your system
 
 Tests for this section are required as well.
 
@@ -49,3 +51,22 @@ It's your choice how you render the output from these endpoints as long as it we
 These endpoints should return JSON.
 
 To keep it simple, don't worry about using a persistent datastore.
+
+## Installation
+
+Download from http://example.com/FIXME.
+
+## Usage
+
+FIXME: explanation
+
+    $ java -jar blah-0.1.0-standalone.jar [args]
+
+## Options
+
+FIXME: listing of options this app accepts.
+
+## Examples
+
+...
+
