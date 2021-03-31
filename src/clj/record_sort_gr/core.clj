@@ -84,8 +84,10 @@
   (with-open [rdr (io/reader fname)]
     (reduce conj [] (line-seq rdr))))
 
-(defn file->recs [fname] (map line->rec (file->lines fname)))
+(defn files->recs
+  [fnames]
+  (mapcat #(map line->rec (file->lines %)) fnames))
 
-(file->recs "./test/clj/record_sort_gr/fs/comma-random.txt")
-
-  
+(files->recs ["./test/clj/record_sort_gr/fs/pipe-random.txt"
+              "./test/clj/record_sort_gr/fs/comma-random.txt"
+              "./test/clj/record_sort_gr/fs/space-random.txt"])
