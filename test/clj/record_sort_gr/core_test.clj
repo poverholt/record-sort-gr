@@ -14,13 +14,13 @@
 ;;;;
 ;;;; Temporary Notes...
 ;;;; * Use a single internal record format
-;;;; * Dates are internally YYYY/MM/DD for simpler sorting. 
+;;;; * Dates are internally java.util.Date objects for simpler sorting. 
 ;;;;    * Display format is specified in assignment as M/D/YYYY.
 ;;;;    * In inputs, it is M/D/YYYY. M and D will be 1 or 2 digits.
-;;;;    * Which means we cannot directly print the record, but will need some print formating code.
+;;;;    * Which may mean we cannot directly print the record, but will need some print formatting code.
 ;;;; * Internal gender is always M or F. In inputs, it can be any portion of male or female and not case sensitive.
-;;;; * Favorite color must be text from pre-defined list Java.Color (for now). In inputs, it is not case sensitive.
-;;;; * For huge data that does not fit in memory, sorting would be done by seeking into file and inserting.
+;;;; * Favorite color is just a string. It is never sorted or operated on.
+;;;; * For huge data that does not fit in memory, sorting would be done by seeking into file and inserting or database.
 ;;;; * Removes identical redundant records, but for those that conflict, both will exist and be sorted.
 ;;;;
 ;;;; Other Tests...
