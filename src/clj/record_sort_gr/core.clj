@@ -38,7 +38,7 @@
   (zipmap [:lname :fname :gender :color :bdate]
           (-> line
               str/trim
-              (str/split #", "))))
+              (str/split #"\s*[,|\s]\s*"))))
 
 (defn str-start-compare
   "Check if all of s is at the start of valid. The comparison is case insensitive. It fails if s is empty or longer
