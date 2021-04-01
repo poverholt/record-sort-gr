@@ -2,36 +2,15 @@
   (:gen-class)
   (:require [clojure.java.io :as io]
             [clojure.string :as str])
-  (:import [java.util Date]
-           [java.text SimpleDateFormat ParsePosition]))
+  (:import [java.lang StringBuffer]
+           [java.text SimpleDateFormat]
+           [java.util Date]))
 
 
 (defn -main
   "I don't do a whole lot ... yet."
   [& args]
   (println "Hello, World!"))
-
-(defn parse
-  "Reads 0 or more files, where each file has one record per line. Each line includes last name, first name, gender,
-  favorite color and date of birth, delimited by either pipe (|), comma (,) or space ( ). There delmiter may include
-  extra white space as well.
-
-  All records are combined into a single vector with one map entry record per file record. Map entry fields include
-  :lname, :fname, :gender, :color and :bdate. Any file records that do not conform also include an :error field and if
-  necessary, placeholder information will be put into the other fields.
-
-  All printable characters are allowed in lname and fname. Gender will convert from file text F or Female to text F,
-  and likewise for males. Color can be any color in java.awt.Color. bdate will be converted from file format M/D/YYYY
-  to map format YYYY-MM-DD.
-  "
-  [& fnames] [{}])
-
-(defn sort-gender [records] nil)
-
-(defn sort-bdate [records] nil)
-
-(defn sort-lname [records] nil)
-
 
 (defn _line->rec
   [line]
@@ -60,11 +39,16 @@
   [rec]
   (update rec :gender #(->gender %)))
 
-;; (.after (Date. 2000 1 1) (Date. 1990 1 1))
+(def date-format (SimpleDateFormat. "MM/dd/yyyy"))
 
-(defn ->bdate [s]
-  (.parse (SimpleDateFormat. "MM/dd/yyyy") s (ParsePosition. 0)))
+(defn ->bdate [s] (.parse date-format s))
 
+(defn bdate->str [date] (.format date-format date))
+
+(def date (->bdate "11/12/2013"))
+
+(println (bdate->str date))
+  
 (defn format-bdate
   [rec]
   (update rec :bdate #(->bdate %)))
@@ -97,3 +81,64 @@
 (files->recs ["./test/clj/record_sort_gr/fs/pipe-random.txt"
               "./test/clj/record_sort_gr/fs/comma-random.txt"
               "./test/clj/record_sort_gr/fs/space-random.txt"])
+
+(defn parse
+  "Reads 0 or more files, where each file has one record per line. Each line includes last name, first name, gender,
+  favorite color and date of birth, delimited by either pipe (|), comma (,) or space ( ). There delmiter may include
+  extra white space as well.
+
+  All records are combined into a single vector with one map entry record per file record. Map entry fields include
+  :lname, :fname, :gender, :color and :bdate. Any file records that do not conform also include an :error field and if
+  necessary, placeholder information will be put into the other fields.
+
+  All printable characters are allowed in lname and fname. Gender will convert from file text F or Female to text F,
+  and likewise for males. Color can be any color in java.awt.Color. bdate will be converted from file format M/D/YYYY
+  to map format YYYY-MM-DD.
+  "
+  [& fnames] [{}])
+
+
+(defn sort-gender
+  "Sort by gender (females before males), then by last name ascending"
+  [recs]
+  (letfn [(gender-lname-cmp [a b]
+            (let [c (compare (:gender a) (:gender b))]
+              (if (not= c 0)
+                c
+                (let [c (compare (:lname a) (:lname b))]
+                  c))))]
+    (sort gender-lname-cmp recs)))
+
+(defn sort-bdate
+  "Sort by birth date ascending."
+  [recs]
+  (letfn [(date-cmp [a b] (.compareTo a b))]
+    (sort-by :bdate date-cmp recs)))
+
+(defn sort-lname
+  "Sort by last name descending"
+  [recs]
+  (letfn [(rev-cmp [a b] (compare b a))]
+    (sort-by :lname rev-cmp recs)))
+
+
+(sort-gender (files->recs ["./test/clj/record_sort_gr/fs/pipe-random.txt"
+                           "./test/clj/record_sort_gr/fs/comma-random.txt"
+                           "./test/clj/record_sort_gr/fs/space-random.txt"]))
+
+(sort-bdate (files->recs ["./test/clj/record_sort_gr/fs/pipe-random.txt"
+                          "./test/clj/record_sort_gr/fs/comma-random.txt"
+                          "./test/clj/record_sort_gr/fs/space-random.txt"]))
+
+(sort-lname (files->recs ["./test/clj/record_sort_gr/fs/pipe-random.txt"
+                          "./test/clj/record_sort_gr/fs/comma-random.txt"
+                          "./test/clj/record_sort_gr/fs/space-random.txt"]))
+
+(defn rec-print
+  [rec]
+  (println (str (:lname rec) ", " (:fname rec) ", " (:gender rec) ", " (:color rec) ", " (bdate->str (:bdate rec)))))
+
+(let [d (sort-gender (files->recs ["./test/clj/record_sort_gr/fs/pipe-random.txt"
+                                   "./test/clj/record_sort_gr/fs/comma-random.txt"
+                                   "./test/clj/record_sort_gr/fs/space-random.txt"]))]
+  (map rec-print d))
