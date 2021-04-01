@@ -1,2 +1,2 @@
-McLachlan, Sarah, Female, Cyan, 1/28/1938
-Metheny, Pat, Male, Green, 8/12/1944
+McLachlan, Sarah, f, Green, 1/28/1968
+McLachlan, Sarah, f, Green, 1/28/1968

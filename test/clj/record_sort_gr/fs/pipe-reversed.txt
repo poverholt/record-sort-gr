@@ -1,2 +1,3 @@
-Puth | Charlie | Male | Red | 12/2/1961
-Plant | Robert | Male | Orange | 8/20/1958
+Puth | Charlie | M | black | 12/2/1991
+Plant|Robert|Ma|Blue|8/20/1948
+O'Conner | Sinead   |  Fe  |  cyan  |  12/8/1966

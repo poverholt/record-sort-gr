@@ -1,2 +1,5 @@
-Plant | Robert | Male | Orange | 8/20/1958
-Bailey-Rae | Corinne | Female | Black | 2/26/1919
+McLachlan | Sarah  | Female|Green |  1/28/1968
+Plant | Robert | Male | Blue | 8/20/1948
+Bailey-Rae | Corinne | Female | RED | 2/26/1979
+Puth|Charlie|M|black|12/2/1991
+O'Conner | Sinead  |  Fe   |  cyan  |  12/8/1966

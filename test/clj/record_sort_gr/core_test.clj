@@ -2,15 +2,18 @@
   (:require [record-sort-gr.core :as core])
   (:use clojure.test)
   (:import [java.awt Color]
-           [java.util Date]))
+           [java.util Date GregorianCalendar]))
 
-;;;; Questions...
-;;;; * Can I assume it is one record per line. It is implied by examples, but never specified.
-;;;; * Should last name characters be restricted at all? Must at least support ' and - for names like O'Conner and
-;;;;   Smith-Jones. Should first letter capitals be enforced? This would be required after - in Smith-Jones as well.
-;;;; * Should first name characers be restricted at all? Should first letter capital be enforced?
-;;;; * How many color names should be supported?
-;;;; * Support data that is too large for memory?
+;;;; Assumptions...
+;;;; * Assume files are one record per line, no multi-line records and no empty lines. However, an empty file is allowed.
+;;;; * Last name and first name characters and capitalization are not restricted at all. This allows names that include
+;;;;   ' and -, and those that start with lower-case. Examples O'Conner, vanGogh, Zeta-Jones.
+;;;;   * Note that van Gogh was changed to vanGogh to match delimiter assumption specified by the assignment. 
+;;;; * Sorting is case insensitive. This makes sense for all data, including name directories.
+;;;; * Because there are no operations against colors, they are not restricted to web colors or java.awt.Color, and can
+;;;;   be any valid string.
+;;;; * Gender is any non-empty portion of the string female or male, case-insensitive.
+;;;; * Does not support data sizes too larget to fit in memory. Does not use database or advanced sorting using swap to file.
 ;;;;
 ;;;; Temporary Notes...
 ;;;; * Use a single internal record format
@@ -24,100 +27,91 @@
 ;;;; * Removes identical redundant records, but for those that conflict, both will exist and be sorted.
 ;;;;
 ;;;; Other Tests...
-;;;; * Huge datasets
+;;;; * Large datasets
+;;;; * Empty file and files with only white-space gives 0 records
 ;;;; * Single record in file
 ;;;; * No <CR> at end of last record
+;;;; * Extra fields, too few fields per line
+;;;; * Invalid gender format, invalid date format, flexible name formats
+;;;; * WS around delimiters and start/end of line
+;;;; * Varying original order of combined records in memory
+;;;; * identical duplicate record
+;;;; * duplicate records and lname/fname/gender are allowed (TODO: Add 2nd Sarah to reversed)
 
-(def empty-check [{}])
+(defn- date
+  "Returns a java Date object given year, month, day as integers. Input month is 1-based, meaning January is month 1."
+  [year month day]
+  (.getTime (GregorianCalendar. year (dec month) day)))
 
-(def sorted-check [{:lname "Bailey-Rae" :fname "Corinne" :gender "F", :color Color/BLACK :bdate (.getTime (Date. 1919 2 26))}
-                   {:lname "DeGraw" :fname "Gavin" :gender "F" :color Color/BLUE :bdate (.getTime (Date. 1927 2 4))}
-                   {:lname "McLachlan" :fname "Sarah" :gender "F" :color Color/CYAN :bdate (.getTime (Date. 1938 1 28))}
-                   {:lname "Metheny" :fname "Pat" :gender "M", :color Color/GREEN :bdate (.getTime (Date. 1944 8 12))}
-                   {:lname "Plant" :fname "Robert" :gender "M" :color Color/ORANGE :bdate (.getTime (Date. 1958 8 20))}
-                   {:lname "Puth" :fname "Charlie" :gender "M" :color Color/RED :bdate (.getTime (Date. 1961 12 2))}])
+(def empty-check '())
 
-(def gender-random-check [{:lname "Brodie" :fname "TJ" :gender "F" :color Color/WHITE :bdate (.getTime (Date. 1990 6 7))}
-                          {:lname "Anderson" :fname "Frederick" :gender "M" :color Color/YELLOW :bdate (.getTime (Date. 1989 10 2))}
-                          {:lname "Nylander" :fname "William" :gender "M" :color Color/RED :bdate (.getTime (Date. 1996 5 1))}
-                          {:lname "Tavares" :fname "John" :gender "M" :color Color/BLUE :bdate (.getTime (Date. 1990 9 20))}
-                          {:lname "Thornton" :fname "Joe" :gender "M" :color Color/BLUE :bdate (.getTime (Date. 1979 7 2))}])
+(def gender-sorted-check
+  [{:lname "Bailey-Rae" :fname "Corinne" :gender "F" :color "RED" :bdate (date 1979 2 26)}
+   {:lname "McLachlan" :fname "Sarah" :gender "F" :color "Green" :bdate (date 1968 1 28)}
+   {:lname "McLachlan" :fname "Sarah" :gender "F" :color "Green" :bdate (date 1968 1 28)}
+   {:lname "O'Conner" :fname "Sinead" :gender "F" :color "cyan" :bdate (date 1966 12 8)}
+   {:lname "cummings" :fname "e.e." :gender "M" :color "light-gray" :bdate (date 1894 10 14)}
+   {:lname "DeGraw" :fname "Gavin" :gender "M" :color "light-blue" :bdate (date 1977 2 4)}
+   {:lname "Metheny" :fname "Pat" :gender "M", :color "green" :bdate (date 1954 8 12)}
+   {:lname "Plant" :fname "Robert" :gender "M" :color "Blue" :bdate (date 1948 8 20)}
+   {:lname "Puth" :fname "Charlie" :gender "M" :color "black" :bdate (date 1991 12 2)}])
 
-(def bdate-random-check [{:lname "Thornton" :fname "Joe" :gender "M" :color Color/BLUE :bdate (.getTime (Date. 1979 7 2))}
-                         {:lname "Anderson" :fname "Frederick" :gender "M" :color Color/YELLOW :bdate (.getTime (Date. 1989 10 2))}
-                         {:lname "Brodie" :fname "TJ" :gender "F" :color Color/WHITE :bdate (.getTime (Date. 1990 6 7))}
-                         {:lname "Tavares" :fname "John" :gender "M" :color Color/BLUE :bdate (.getTime (Date. 1990 9 20))}
-                         {:lname "Nylander" :fname "William" :gender "M" :color Color/RED :bdate (.getTime (Date. 1996 5 1))}])
+(def bdate-sorted-check
+  [{:lname "cummings" :fname "e.e." :gender "M" :color "light-gray" :bdate (date 1894 10 14)}
+   {:lname "Plant" :fname "Robert" :gender "M" :color "Blue" :bdate (date 1948 8 20)}
+   {:lname "Metheny" :fname "Pat" :gender "M", :color "green" :bdate (date 1954 8 12)}
+   {:lname "O'Conner" :fname "Sinead" :gender "F" :color "cyan" :bdate (date 1966 12 8)}
+   {:lname "McLachlan" :fname "Sarah" :gender "F" :color "Green" :bdate (date 1968 1 28)}
+   {:lname "McLachlan" :fname "Sarah" :gender "F" :color "Green" :bdate (date 1968 1 28)}
+   {:lname "DeGraw" :fname "Gavin" :gender "M" :color "light-blue" :bdate (date 1977 2 4)}
+   {:lname "Bailey-Rae" :fname "Corinne" :gender "F" :color "RED" :bdate (date 1979 2 26)}
+   {:lname "Puth" :fname "Charlie" :gender "M" :color "black" :bdate (date 1991 12 2)}])
 
-(def lname-random-check [{:lname "Anderson" :fname "Frederick" :gender "M" :color Color/YELLOW :bdate (.getTime (Date. 1989 10 2))}
-                         {:lname "Brodie" :fname "TJ" :gender "F" :color Color/WHITE :bdate (.getTime (Date. 1990 6 7))}
-                         {:lname "Nylander" :fname "William" :gender "M" :color Color/RED :bdate (.getTime (Date. 1996 5 1))}
-                         {:lname "Tavares" :fname "John" :gender "M" :color Color/BLUE :bdate (.getTime (Date. 1990 9 20))}
-                         {:lname "Thornton" :fname "Joe" :gender "M" :color Color/BLUE :bdate (.getTime (Date. 1979 7 2))}])
-
-;; (deftest sort-gender-test
-;;   (testing "sort-gender"
-;;     (is (= (core/parse "empty-check.txt") (core/sort-gender (core/parse "empty.txt" "empty.txt" "empty.txt"))))
-;;     (is (= (core/parse "gender-check") (core/sort-gender (core/parse "pipe-presorted.txt" "comma-presorted.txt" "space-presorted.txt"))))
-;;     (is (= (core/parse "gender-check") (core/sort-gender (core/parse "pipe-reversed.txt" "comma-reversed.txt" "space-reversed.txt"))))
-;;     (is (= (core/parse "gender-check") (core/sort-gender (core/parse "pipe-shuffled.txt" "comma-shuffled.txt" "space-random.txt"))))))
-
-;; (deftest sort-bdate-test
-;;   (testing "sort-bdate"
-;;     (is (= (core/parse "empty-check.txt") (core/sort-bdate (core/parse "empty.txt" "empty.txt" "empty.txt"))))
-;;     (is (= (core/parse "bdate-check") (core/sort-bdate (core/parse "pipe-presorted.txt" "comma-presorted.txt" "space-presorted.txt"))))
-;;     (is (= (core/parse "bdate-check") (core/sort-bdate (core/parse "pipe-reversed.txt" "comma-reversed.txt" "space-reversed.txt"))))
-;;     (is (= (core/parse "bdate-check") (core/sort-bdate (core/parse "pipe-shuffled.txt" "comma-shuffled.txt" "space-shuffled.txt"))))))
-
-;; (deftest sort-lname-test
-;;   (testing "sort-lname"
-;;     (is (= (core/parse "empty-check.txt") (core/sort-lname (core/parse "empty.txt" "empty.txt" "empty.txt"))))
-;;     (is (= (core/parse "lname-check") (core/sort-lname (core/parse "pipe-presorted.txt" "comma-presorted.txt" "space-presorted.txt"))))
-;;     (is (= (core/parse "lname-check") (core/sort-lname (core/parse "pipe-reversed.txt" "comma-reversed.txt" "space-reversed.txt"))))
-;;     (is (= (core/parse "lname-check") (core/sort-lname (core/parse "pipe-shuffled.txt" "comma-shuffled.txt" "space-shuffled.txt"))))))
-
+(def lname-sorted-check  ; Note: Descending
+  [{:lname "Puth" :fname "Charlie" :gender "M" :color "black" :bdate (date 1991 12 2)}
+   {:lname "Plant" :fname "Robert" :gender "M" :color "Blue" :bdate (date 1948 8 20)}
+   {:lname "O'Conner" :fname "Sinead" :gender "F" :color "cyan" :bdate (date 1966 12 8)}
+   {:lname "Metheny" :fname "Pat" :gender "M", :color "green" :bdate (date 1954 8 12)}
+   {:lname "McLachlan" :fname "Sarah" :gender "F" :color "Green" :bdate (date 1968 1 28)}
+   {:lname "McLachlan" :fname "Sarah" :gender "F" :color "Green" :bdate (date 1968 1 28)}
+   {:lname "DeGraw" :fname "Gavin" :gender "M" :color "light-blue" :bdate (date 1977 2 4)}
+   {:lname "cummings" :fname "e.e." :gender "M" :color "light-gray" :bdate (date 1894 10 14)}
+   {:lname "Bailey-Rae" :fname "Corinne" :gender "F" :color "RED" :bdate (date 1979 2 26)}])   
+   
 (deftest sort-empty-test
-  (let [parsed-empty (core/parse "fs/empty.txt" "fs/empty.txt" "fs/empty.txt")]
-    (testing "empty data"
+  (let [parsed-empty (core/parse "test/clj/record_sort_gr/fs/empty.txt")]
+    (testing "Testing Empty data"
       (is (= empty-check (core/sort-gender parsed-empty)))
       (is (= empty-check (core/sort-bdate parsed-empty)))
       (is (= empty-check (core/sort-lname parsed-empty))))))
 
 (deftest sort-presorted-test
-  (let [parsed-presorted (core/parse "fs/pipe-presorted.txt" "fs/comma-presorted.txt" "fs/space-presorted.txt")]
-    (testing "presorted data"
-      (is (= sorted-check (core/sort-gender parsed-presorted)))
-      (is (= sorted-check (core/sort-bdate parsed-presorted)))
-      (is (= sorted-check (core/sort-lname parsed-presorted))))))
+  (let [parsed-presorted (core/parse "test/clj/record_sort_gr/fs/pipe-presorted.txt"
+                                     "test/clj/record_sort_gr/fs/comma-presorted.txt"
+                                     "test/clj/record_sort_gr/fs/space-presorted.txt")]
+    (testing "Presorted order file input data"
+      (is (= gender-sorted-check (core/sort-gender parsed-presorted)))
+      (is (= bdate-sorted-check (core/sort-bdate parsed-presorted)))
+      (is (= lname-sorted-check (core/sort-lname parsed-presorted))))))
 
 (deftest sort-reversed-test
-  (let [parsed-reversed (core/parse "fs/pipe-reversed.txt" "fs/comma-reversed.txt" "fs/space-reversed.txt")]
-    (testing "reversed data"
-      (is (= sorted-check (core/sort-gender parsed-reversed)))
-      (is (= sorted-check (core/sort-bdate parsed-reversed)))
-      (is (= sorted-check (core/sort-lname parsed-reversed))))))
+  (let [parsed-reversed (core/parse "test/clj/record_sort_gr/fs/pipe-reversed.txt"
+                                    "test/clj/record_sort_gr/fs/comma-reversed.txt"
+                                    "test/clj/record_sort_gr/fs/space-reversed.txt")]
+    (testing "Reversed order file input data"
+      (is (= gender-sorted-check (core/sort-gender parsed-reversed)))
+      (is (= bdate-sorted-check (core/sort-bdate parsed-reversed)))
+      (is (= lname-sorted-check (core/sort-lname parsed-reversed))))))
 
 (deftest sort-shuffled-test
-  (let [parsed-shuffled (core/parse "fs/pipe-shuffled.txt" "fs/comma-shuffled.txt" "fs/space-shuffled.txt")]
-    (testing "shuffled data"
-      (is (= sorted-check (core/sort-gender parsed-shuffled)))
-      (is (= sorted-check (core/sort-bdate parsed-shuffled)))
-      (is (= sorted-check (core/sort-lname parsed-shuffled))))))
-
-;; In the above tests, the test data was created to have the same order, whether sorted by gender, bdate or lname.
-;; This way, several tests can use the same check data.
-;; In the below, the data will have different orders, depending if the sort is on gender, bdate or lname.
-;; Thus, different check data are used.
-(deftest sort-random-test
-  (let [parsed-random (core/parse "fs/pipe-random.txt" "fs/comma-random.txt" "fs/space-random.txt")]
-    (testing "random data"
-      (is (= gender-random-check (core/sort-gender parsed-random)))
-      (is (= bdate-random-check (core/sort-bdate parsed-random)))
-      (is (= lname-random-check (core/sort-lname parsed-random)))
-      )))
+  (let [parsed-shuffled (core/parse "test/clj/record_sort_gr/fs/pipe-shuffled.txt"
+                                    "test/clj/record_sort_gr/fs/comma-shuffled.txt"
+                                    "test/clj/record_sort_gr/fs/space-shuffled.txt")]
+    (testing "Shuffled order file input data"
+      (is (= gender-sorted-check (core/sort-gender parsed-shuffled)))
+      (is (= bdate-sorted-check (core/sort-bdate parsed-shuffled)))
+      (is (= lname-sorted-check (core/sort-lname parsed-shuffled))))))
 
 (deftest ^:disabled next-test
   (testing "temporary"
     (is (= 1 2))))
-    
-
