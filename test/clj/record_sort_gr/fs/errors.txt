@@ -1,0 +1,11 @@
+DeGraw Gavin male light-blue !!!BAD_DATE_1!!!
+Metheny Pat !!!BAD_GENDER_1!!! green 8/12/1954
+McLachlan Sarah  Female  Green   1/28/1968  !!!EXTRA_FIELD_1!!!
+cummings  e.e.   m  light-gray
+!!!Shorty!!!
+McLachlan | Sarah  | Female|Green |  !!!BAD_DATE_2!!!
+Plant | Robert | !!!BAD_GENDER_1!!! | Blue | 8/20/1948
+Bailey-Rae | Corinne | Female | RED | 2/26/1979 |  !!!EXTRA_FIELD_2!!!
+Puth|Charlie|M|black|
+O'Conner | Sinead  |  Fe   |  cyan
+!!!Shorty_2!!! | 

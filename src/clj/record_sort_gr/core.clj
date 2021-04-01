@@ -42,9 +42,13 @@
 
 (defn ->bdate
   [s]
-  (if (empty? s)
-    date-error
-    (.parse date-format s)))
+  (try
+    (.parse date-format s)
+    (catch Exception e date-error)))
+
+;;  (if (empty? s)
+;;    date-error
+;;    (.parse date-format s)))
 
 (defn bdate->str [date] (.format date-format date))
 

@@ -117,8 +117,12 @@
 
 (deftest ^:disabled sort-errors-test
   (let [parsed-errors (core/parse (fp "errors.txt"))]
-    nil))
+    (testing "File errors bad date, bad gender, extra field, missing field(s)."
+      (is (= gender-sorted-check (core/sort-gender parsed-errors)))
+      (is (= bdate-sorted-check (core/sort-bdate parsed-errors)))
+      (is (= lname-sorted-check (core/sort-lname parsed-errors))))))
 
 (deftest ^:disabled next-test
   (testing "temporary"
     (is (= 1 2))))
+
