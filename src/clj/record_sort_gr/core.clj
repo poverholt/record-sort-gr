@@ -51,14 +51,11 @@
 (def date (->bdate "2/26/1979"))
 (def date-check (.getTime (GregorianCalendar. 1979 (dec 2) 26)))
 
-(= (Date. 1979 2 26) (.parse date-format "2/26/1979"))
+;;(= (Date. 1979 2 26) (.parse date-format "2/26/1979"))
 
-(.format date-format (Date. 1979 2 26))
+;;(.format date-format (Date. 1979 2 26))
 
-(.getTime (GregorianCalendar. 1979 2 26))
-
-(println (bdate->str date))
-(println (bdate->str date-check))
+;;(.getTime (GregorianCalendar. 1979 2 26))
   
 (defn format-bdate
   [rec]
@@ -126,22 +123,25 @@
   (letfn [(rev-cmp [a b] (compare (str/lower-case b) (str/lower-case a)))]
     (sort-by :lname rev-cmp recs)))
 
-(defn rec-print
+(defn rec->str
   [rec]
-  (println (str (:lname rec) ", " (:fname rec) ", " (:gender rec) ", " (:color rec) ", " (bdate->str (:bdate rec)))))
-
-;; (let [d (sort-gender (files->recs ["./test/clj/record_sort_gr/fs/pipe-random.txt"
-;;                                    "./test/clj/record_sort_gr/fs/comma-random.txt"
-;;                                    "./test/clj/record_sort_gr/fs/space-random.txt"]))]
-;;   (map rec-print d))
+  (str (:lname rec) ", " (:fname rec) ", " (:gender rec) ", " (:color rec) ", " (bdate->str (:bdate rec))))
 
 (defn -main
-  "I don't do a whole lot ... yet."
+  "Parses the original shuffled test data files, then prints in three orders.
+  1. gender-lname ascending, 2. bdate ascending, 3. lname descending."
   [& args]
-  (println "Hello, World!"))
-
-(parse "test/clj/record_sort_gr/fs/pipe-shuffled.txt"
-       ;;"test/clj/record_sort_gr/fs/comma-shuffled.txt"
-       "test/clj/record_sort_gr/fs/space-shuffled.txt")
-
-(file->lines "test/clj/record_sort_gr/fs/comma-shuffled.txt")
+  (let [fnames ["test/clj/record_sort_gr/fs/pipe-shuffled.txt"
+                "test/clj/record_sort_gr/fs/comma-shuffled.txt"
+                "test/clj/record_sort_gr/fs/space-shuffled.txt"]
+        recs (files->recs fnames)
+        gender-sorted-lines (map rec->str (sort-gender recs))
+        bdate-sorted-lines (map rec->str (sort-bdate recs))
+        lname-sorted-lines (map rec->str (sort-lname recs))]
+    (doseq [line (concat ["" "Sorted by Gender" "----------------"]
+                         gender-sorted-lines
+                         ["" "Sorted by Birthdate" "-------------------"]
+                         bdate-sorted-lines
+                         ["" "Sorted by Lastname Descending" "-----------------------------"]
+                         lname-sorted-lines)]
+      (println line))))
