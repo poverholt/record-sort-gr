@@ -37,12 +37,13 @@
     (.parse date-format s)
     (catch Exception e date-error)))
 
-;; TODO
-(defn- strip-leading-date-0
+(defn- strip-leading-date-0s
   [s]
-  ())
+  (-> s
+      (str/replace #"^0" "")
+      (str/replace #"/0" "/")))
 
-(defn bdate->str [date] (.format date-format date))
+(defn bdate->str [date] (strip-leading-date-0s (.format date-format date)))
 
 
 (defn _line->rec

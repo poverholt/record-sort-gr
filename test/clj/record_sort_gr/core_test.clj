@@ -77,7 +77,7 @@
 
 (deftest bdate-str-test
   (testing "Testing bdate->str"
-    ;; (is (= (core/bdate->str (date 1643 1 4)) "1/4/1643")) ; TODO: Cannot be 01/04/1643!!! FAILING!!!
+    (is (= (core/bdate->str (date 1643 1 4)) "1/4/1643")) ; Requirements indicate this cannot be 01/04/1643
     (is (= (core/bdate->str (date 1999 12 31)) "12/31/1999"))
     (is (= (core/bdate->str core/date-error) "12/31/1969")))) ; TODO: Need non-valid error code!
 
