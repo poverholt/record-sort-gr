@@ -70,3 +70,8 @@ FIXME: listing of options this app accepts.
 
 ...
 
+## Run
+
+Run step 1 output with "lein run".
+Run step 2 server with "lein ring server". Web page will pop up. Visit heroku?
+
