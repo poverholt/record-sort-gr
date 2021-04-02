@@ -6,12 +6,6 @@
            [java.text SimpleDateFormat]
            [java.util Date GregorianCalendar]))
 
-(defn _line->rec
-  [line]
-  (zipmap [:lname :fname :gender :color :bdate]
-          (-> line
-              str/trim
-              (str/split #"\s*[,|\s]\s*"))))
 
 (defn str-start-compare
   "Check if all of s is at the start of valid. The comparison is case insensitive. It fails if s is empty or longer
@@ -25,60 +19,51 @@
 
 (def gender-error "X")
 
-(defn ->gender [s]
+(defn str->gender [s]
   (cond
     (empty? s) gender-error
     (str-start-compare s "Female") "F"
     (str-start-compare s "Male") "M"
     :else gender-error))
 
-(defn format-gender
-  [rec]
-  (update rec :gender #(->gender %)))
 
 (def date-format (SimpleDateFormat. "MM/dd/yyyy"))
 
 (def date-error (Date. 0))
 
-(defn ->bdate
+(defn str->bdate
   [s]
   (try
     (.parse date-format s)
     (catch Exception e date-error)))
 
-;;  (if (empty? s)
-;;    date-error
-;;    (.parse date-format s)))
+;; TODO
+(defn- strip-leading-date-0
+  [s]
+  ())
 
 (defn bdate->str [date] (.format date-format date))
 
-(def date (->bdate "2/26/1979"))
-(def date-check (.getTime (GregorianCalendar. 1979 (dec 2) 26)))
 
-;;(= (Date. 1979 2 26) (.parse date-format "2/26/1979"))
-
-;;(.format date-format (Date. 1979 2 26))
-
-;;(.getTime (GregorianCalendar. 1979 2 26))
-  
-(defn format-bdate
-  [rec]
-  (update rec :bdate #(->bdate %)))
+(defn _line->rec
+  [line]
+  (zipmap [:lname :fname :gender :color :bdate]
+          (-> line
+              str/trim
+              (str/split #"\s*[,|\s]\s*"))))
 
 (defn line->rec
   [line]
   (-> line
       _line->rec
-      ;;format-gender
-      (update :gender #(->gender %))
-      ;;format-bdate
-      (update :bdate #(->bdate %))
+      (update :gender #(str->gender %))
+      (update :bdate #(str->bdate %))
       ))
-      
+
 (defn file->lines
   [fname]
-  (remove empty? (with-open [rdr (io/reader fname)]
-                   (reduce conj [] (line-seq rdr)))))
+  (remove str/blank? (with-open [rdr (io/reader fname)]
+                       (reduce conj [] (line-seq rdr)))))
 
 (defn file->recs
   [fname]
@@ -104,6 +89,11 @@
   [& fnames]
   (files->recs fnames))
 
+(defn rec->str
+  [rec]
+  (str (:lname rec) ", " (:fname rec) ", " (:gender rec) ", " (:color rec) ", " (bdate->str (:bdate rec))))
+
+
 (defn sort-gender
   "Sort by gender (females before males), then by last name ascending"
   [recs]
@@ -127,10 +117,6 @@
   (letfn [(rev-cmp [a b] (compare (str/lower-case b) (str/lower-case a)))]
     (sort-by :lname rev-cmp recs)))
 
-(defn rec->str
-  [rec]
-  (str (:lname rec) ", " (:fname rec) ", " (:gender rec) ", " (:color rec) ", " (bdate->str (:bdate rec))))
-
 (defn -main
   "Parses the original shuffled test data files, then prints in three orders.
   1. gender-lname ascending, 2. bdate ascending, 3. lname descending."
@@ -149,3 +135,6 @@
                          ["" "Sorted by Lastname Descending" "-----------------------------"]
                          lname-sorted-lines)]
       (println line))))
+
+
+(file->recs "test/clj/record_sort_gr/fs/pipe-shuffled.txt")

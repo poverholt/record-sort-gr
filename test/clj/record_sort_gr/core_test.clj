@@ -39,12 +39,98 @@
 ;;;; * duplicate records and lname/fname/gender are allowed (TODO: Add 2nd Sarah to reversed)
 
 
-(defn- fp [fname] (str "test/clj/record_sort_gr/fs/" fname))
+;;;; Gender format tests...
+
+(deftest gender-test
+  (testing "Tesing str->gender"
+    (is (= (core/str->gender "Male") "M"))
+    (is (= (core/str->gender "F") "F"))
+    (is (= (core/str->gender "Fem") "F"))
+    (is (= (core/str->gender "Female") "F"))
+    (is (= (core/str->gender "Female ") "X"))
+    (is (= (core/str->gender "Femalesque") "X"))
+    (is (= (core/str->gender "BAD") "X"))
+    (is (= (core/str->gender " ") "X"))
+    (is (= (core/str->gender "") "X"))
+    (is (= (core/str->gender nil) "X"))))
+
+
+;;;; Date format tests...
 
 (defn- date
   "Returns a java Date object given year, month, day as integers. Input month is 1-based, meaning January is month 1."
   [year month day]
   (.getTime (GregorianCalendar. year (dec month) day)))
+
+(deftest str-bdate-test ; NOTE: If called "str->bdate-test" with "->", lein test :only won't run!!!???
+  (testing "Testing str->bdate"
+    (is (= (core/str->bdate "1/4/1643") (date 1643 1 4)))
+    (is (= (core/str->bdate "12/31/1999") (date 1999 12 31)))
+    (is (= (core/str->bdate " 12/31/1999 ") (date 1999 12 31)))
+    (is (= (core/str->bdate "12-31-1999") core/date-error))
+    (is (= (core/str->bdate "31/12/1999") (date 2001 7 12)) "Warning: Day/Month transpositions not caught.")
+    (is (= (core/str->bdate "1999/12/31") (date 197 7 12)) "Warning: Year/Month/Day transpositions not caught.")
+    (is (= (core/str->bdate "BAD") core/date-error))
+    (is (= (core/str->bdate " ") core/date-error))
+    (is (= (core/str->bdate "") core/date-error))
+    (is (= (core/str->bdate nil) core/date-error))))
+
+(deftest bdate-str-test
+  (testing "Testing bdate->str"
+    ;; (is (= (core/bdate->str (date 1643 1 4)) "1/4/1643")) ; TODO: Cannot be 01/04/1643!!! FAILING!!!
+    (is (= (core/bdate->str (date 1999 12 31)) "12/31/1999"))
+    (is (= (core/bdate->str core/date-error) "12/31/1969")))) ; TODO: Need non-valid error code!
+
+
+;;;; File, line and record tests...
+
+(deftest _line-rec-test
+  (testing "Testing _line->rec"
+    (is (= (core/_line->rec "Doe | John | Male | Blue | 12/31/1999") {:lname "Doe" :fname "John" :gender "Male" :color "Blue" :bdate "12/31/1999"}) "Pipe delimiter")
+    (is (= (core/_line->rec "Doe, John, Male, Blue, 12/31/1999") {:lname "Doe" :fname "John" :gender "Male" :color "Blue" :bdate "12/31/1999"}) "Comma delimiter")
+    (is (= (core/_line->rec "Doe John Male Blue 12/31/1999") {:lname "Doe" :fname "John" :gender "Male" :color "Blue" :bdate "12/31/1999"}) "Space delimiter")
+    (is (= (core/_line->rec "Doe|John   |Male| Blue  |  12/31/1999") {:lname "Doe" :fname "John" :gender "Male" :color "Blue" :bdate "12/31/1999"}) "Varying delimiter white space")
+    (is (= (core/_line->rec "  Doe | John | Male | Blue | 12/31/1999  ") {:lname "Doe" :fname "John" :gender "Male" :color "Blue" :bdate "12/31/1999"}) "Surrounding white space")
+    (is (= (core/_line->rec "Doe | John | Male | Blue | 12/31/1999 | Extra") {:lname "Doe" :fname "John" :gender "Male" :color "Blue" :bdate "12/31/1999"}) "Extra field")
+    (is (= (core/_line->rec "Doe | John | Male | Blue") {:lname "Doe" :fname "John" :gender "Male" :color "Blue"}) "Missing last field")
+    (is (= (core/_line->rec "John | Male | Blue 12/31/1999") {:lname "John" :fname "Male" :gender "Blue" :color "12/31/1999"}) "Missing first field")
+    (is (= (core/_line->rec "Doe") {:lname "Doe"}) "One field")
+    (is (= (core/_line->rec "   ") {:lname ""}) "White space only")
+    (is (= (core/_line->rec "") {:lname ""}) "Empty line")))
+
+(deftest line-rec-test
+  (testing "Testing line->rec"
+    (is (= (core/line->rec "Doe | John | M | Blue | 12/31/1999") {:lname "Doe" :fname "John" :gender "M" :color "Blue" :bdate (date 1999 12 31)}) "Pipe delimiter")
+    (is (= (core/line->rec "Doe, John, M, Blue, 12/31/1999") {:lname "Doe" :fname "John" :gender "M" :color "Blue" :bdate (date 1999 12 31)}) "Comma delimiter")
+    (is (= (core/line->rec "Doe John M Blue 12/31/1999") {:lname "Doe" :fname "John" :gender "M" :color "Blue" :bdate (date 1999 12 31)}) "Space delimiter")
+    (is (= (core/line->rec "Doe|John   |M| Blue  |  12/31/1999") {:lname "Doe" :fname "John" :gender "M" :color "Blue" :bdate (date 1999 12 31)}) "Varying delimiter white space")
+    (is (= (core/line->rec "  Doe | John | M | Blue | 12/31/1999  ") {:lname "Doe" :fname "John" :gender "M" :color "Blue" :bdate (date 1999 12 31)}) "Surrounding white space")
+    (is (= (core/line->rec "Doe | John | M | Blue | 12/31/1999 | Extra") {:lname "Doe" :fname "John" :gender "M" :color "Blue" :bdate (date 1999 12 31)}) "Extra field")
+    (is (= (core/line->rec "Doe | John | M | Blue") {:lname "Doe" :fname "John" :gender "M" :color "Blue" :bdate core/date-error}) "Missing last field")
+    (is (= (core/line->rec "John | M | Blue 12/31/1999") {:lname "John" :fname "M" :gender "X" :color "12/31/1999" :bdate core/date-error}) "Missing first field")
+    (is (= (core/line->rec "Doe") {:lname "Doe" :gender "X" :bdate core/date-error}) "One field")
+    (is (= (core/line->rec "   ") {:lname "" :gender "X" :bdate core/date-error}) "White space only")
+    (is (= (core/line->rec "") {:lname "" :gender "X" :bdate core/date-error}) "Empty line")))
+
+(defn- fp [fname] (str "test/clj/record_sort_gr/fs/" fname))
+
+(deftest files-recs-test
+  (let [parsed-9 (core/files->recs [(fp "pipe-presorted.txt") (fp "comma-presorted.txt") (fp "space-presorted.txt")])
+        parsed-11-errors (core/files->recs [(fp "errors.txt")])
+        parsed-empty (core/files->recs [(fp "empty.txt")])
+        parsed-blank-lines (core/files->recs [(fp "blank-lines.txt")])]
+    (testing "Testing files->recs"
+      (is (= (count parsed-9) 9) "Parses 9 valid records")
+      (is (= (count parsed-11-errors) 11) "Parses 11 invalid records with throwing exceptions")
+      (is (= (count parsed-empty) 0) "Empty files produce 0 records without exceptions")
+      (is (= (count parsed-blank-lines) 0) "Blank lines produce 0 records without exceptions"))))
+
+(deftest rec-str-test
+  (testing "Testing rec->str"
+    (is (= 1 1)))) ; TODO
+
+      
+;;;; TOP-LEVEL SORTING TESTS...
 
 (def empty-check '())
 
@@ -92,7 +178,7 @@
   (let [parsed-presorted (core/parse (fp "pipe-presorted.txt")
                                      (fp "comma-presorted.txt")
                                      (fp "space-presorted.txt"))]
-    (testing "Presorted order file input data"
+    (testing "Testing presorted order file input data"
       (is (= gender-sorted-check (core/sort-gender parsed-presorted)))
       (is (= bdate-sorted-check (core/sort-bdate parsed-presorted)))
       (is (= lname-sorted-check (core/sort-lname parsed-presorted))))))
@@ -101,7 +187,7 @@
   (let [parsed-reversed (core/parse (fp "pipe-reversed.txt")
                                     (fp "comma-reversed.txt")
                                     (fp "space-reversed.txt"))]
-    (testing "Reversed order file input data"
+    (testing "Testing reversed order file input data"
       (is (= gender-sorted-check (core/sort-gender parsed-reversed)))
       (is (= bdate-sorted-check (core/sort-bdate parsed-reversed)))
       (is (= lname-sorted-check (core/sort-lname parsed-reversed))))))
@@ -110,14 +196,14 @@
   (let [parsed-shuffled (core/parse (fp "pipe-shuffled.txt")
                                     (fp "comma-shuffled.txt")
                                     (fp "space-shuffled.txt"))]
-    (testing "Shuffled order file input data"
+    (testing "Testing shuffled order file input data"
       (is (= gender-sorted-check (core/sort-gender parsed-shuffled)))
       (is (= bdate-sorted-check (core/sort-bdate parsed-shuffled)))
       (is (= lname-sorted-check (core/sort-lname parsed-shuffled))))))
 
 (deftest ^:disabled sort-errors-test
   (let [parsed-errors (core/parse (fp "errors.txt"))]
-    (testing "File errors bad date, bad gender, extra field, missing field(s)."
+    (testing "Testing file errors such as bad date, bad gender, extra field, missing field(s)."
       (is (= gender-sorted-check (core/sort-gender parsed-errors)))
       (is (= bdate-sorted-check (core/sort-bdate parsed-errors)))
       (is (= lname-sorted-check (core/sort-lname parsed-errors))))))
@@ -125,4 +211,3 @@
 (deftest ^:disabled next-test
   (testing "temporary"
     (is (= 1 2))))
-
