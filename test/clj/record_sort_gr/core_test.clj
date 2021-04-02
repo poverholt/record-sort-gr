@@ -37,6 +37,7 @@
 ;;;; * Varying original order of combined records in memory
 ;;;; * identical duplicate record
 ;;;; * duplicate records and lname/fname/gender are allowed (TODO: Add 2nd Sarah to reversed)
+;;;; * Delimiters should allow user to have empty fields.
 
 
 ;;;; Gender format tests...
@@ -121,13 +122,14 @@
         parsed-blank-lines (core/files->recs [(fp "blank-lines.txt")])]
     (testing "Testing files->recs"
       (is (= (count parsed-9) 9) "Parses 9 valid records")
-      (is (= (count parsed-11-errors) 11) "Parses 11 invalid records with throwing exceptions")
+      (is (= (count parsed-11-errors) 11) "Parses 11 invalid records without throwing exceptions")
       (is (= (count parsed-empty) 0) "Empty files produce 0 records without exceptions")
       (is (= (count parsed-blank-lines) 0) "Blank lines produce 0 records without exceptions"))))
 
 (deftest rec-str-test
-  (testing "Testing rec->str"
-    (is (= 1 1)))) ; TODO
+  (let [rec {:lname "Newton" :fname "Isaac" :gender "M" :color "Red" :bdate (date 1643 1 4)}]
+    (testing "Testing rec->str"
+      (is (= (core/rec->str rec) "Newton, Isaac, M, Red, 1/4/1643")))))
 
       
 ;;;; TOP-LEVEL SORTING TESTS...
