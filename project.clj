@@ -7,8 +7,8 @@
                  [ring/ring-defaults "0.3.2"]]
   :plugins [[lein-ring "0.12.5"]]
   :ring {:handler record-sort-gr.handler/app}
-  :source-paths ["src/clj" "src/cljc" "src/cljs"]
-  :test-paths ["test/clj"]
+  :source-paths ["src"]
+  :test-paths ["test"]
   :target-path "target/%s"
   :main ^:skip-aot record-sort-gr.core
   

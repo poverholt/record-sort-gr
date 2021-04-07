@@ -8,9 +8,9 @@
   "Parses the original shuffled test data files, then prints in three orders.
   1. gender-lname ascending, 2. bdate ascending, 3. lname descending."
   [& args]
-  (let [fnames ["test/clj/record_sort_gr/fs/pipe-shuffled.txt"
-                "test/clj/record_sort_gr/fs/comma-shuffled.txt"
-                "test/clj/record_sort_gr/fs/space-shuffled.txt"]
+  (let [fnames ["test/record_sort_gr/fs/pipe-shuffled.txt"
+                "test/record_sort_gr/fs/comma-shuffled.txt"
+                "test/record_sort_gr/fs/space-shuffled.txt"]
         recs (parse/files->recs fnames)
         gender-sorted-lines (map format/rec->str (sort/gender recs))
         bdate-sorted-lines (map format/rec->str (sort/bdate recs))
@@ -24,4 +24,4 @@
       (println line))))
 
 
-(parse/file->recs "test/clj/record_sort_gr/fs/pipe-shuffled.txt")
+(parse/file->recs "test/record_sort_gr/fs/pipe-shuffled.txt")

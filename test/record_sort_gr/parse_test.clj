@@ -32,7 +32,7 @@
     (is (= (parse/line->rec "   ") {:lname "" :gender "X" :bdate bdate/date-error}) "White space only")
     (is (= (parse/line->rec "") {:lname "" :gender "X" :bdate bdate/date-error}) "Empty line")))
 
-(defn fp [fname] (str "test/clj/record_sort_gr/fs/" fname))
+(defn fp [fname] (str "test/record_sort_gr/fs/" fname))
 
 (deftest files-recs-test
   (let [parsed-9 (parse/files->recs [(fp "pipe-presorted.txt") (fp "comma-presorted.txt") (fp "space-presorted.txt")])
