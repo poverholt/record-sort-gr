@@ -14,6 +14,7 @@
   :test-paths ["test"]
   :target-path "target/%s"
   :main ^:skip-aot record-sort-gr.core
+  :repl-options {:init-ns record-sort-gr.core}
   
   :profiles {:uberjar {:aot :all
                        :jvm-opts ["-Dclojure.compiler.direct-linking=true"]}

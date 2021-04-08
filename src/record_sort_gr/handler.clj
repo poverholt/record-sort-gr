@@ -44,12 +44,11 @@
 (defn- handle-recs
   "Returns sorted records as JSON."
   [sort-fn]
-  {:status 200
-   :headers {"Content-Type" "application/json"} ;; TODO: Can we add this in route wrapper too?
-   :body (-> (mdl/read-recs)
-             (sort-fn)
-             ;;json/generate-string ;; TODO: This is done in route wrapper
-             )})
+  (let [sorted-recs (sort-fn (mdl/read-recs))
+        body (map #(update % :bdate bdate/bdate->str) sorted-recs)]
+    {:status 200
+     :headers {"Content-Type" "application/json"} ;; TODO: Can we add this in route wrapper too?
+     :body body}))
 
 (defn handle-recs-gender [req] (handle-recs sort/gender))
 (defn handle-recs-bdate  [req] (handle-recs sort/bdate))

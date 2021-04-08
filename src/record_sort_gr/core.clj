@@ -68,6 +68,4 @@
       (println line))))
 
 
-(parse/file->recs "test/record_sort_gr/fs/pipe-shuffled.txt")
-
 
