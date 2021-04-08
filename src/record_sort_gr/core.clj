@@ -1,10 +1,54 @@
 (ns record-sort-gr.core
   (:gen-class)
-  (:require [record-sort-gr.format :as format]
+  (:require [compojure.core :refer [defroutes ANY GET POST PUT DELETE]]
+            [compojure.route :refer [not-found]]
+            [record-sort-gr.format :as format]
+            [record-sort-gr.handler :as hdlr]
             [record-sort-gr.parse :as parse]
-            [record-sort-gr.sort :as sort]))
+            [record-sort-gr.sort :as sort]
+            [ring.adapter.jetty :as jetty]
+            [ring.handler.dump :refer [handle-dump]]
+            ;;[ring.middleware.file-info :refer [wrap-file-info]]
+            [ring.middleware.json :refer [wrap-json-response]]
+            [ring.middleware.params :refer [wrap-params]]
+            [ring.middleware.reload :refer [wrap-reload]]
+            ;;[ring.middleware.resource :refer [wrap-resource]]
+            ))
 
-(defn -main
+(defroutes routes
+  (GET "/" [] hdlr/greet)
+  (GET "/hello" [] "Hello")
+  (ANY "/request" [] handle-dump)
+;;  (GET "/records" [] hdlr/handle-recs)
+  (POST "/records" [] hdlr/handle-create-rec)
+;;  (POST "/records" [] handle-dump)
+;;  (DELETE "/records/:rec-id" [] hdlr/handle-delete-rec)  TODO: Also, don't need wrap-simulated methods
+;;  (PUT "/records/:rec-id" [] hdlr/handle-update-rec)
+  (GET "/records/gender" [] hdlr/handle-recs-gender)
+  (GET "/records/birthdate" [] hdlr/handle-recs-bdate)
+  (GET "/records/name" [] hdlr/handle-recs-lname)
+  (not-found "<h1>The page requested does not exist.</h1>"))
+
+(defn wrap-server [hdlr]
+  (fn [req]
+    (assoc-in (hdlr req) [:headers "Server"] "Listronica 9000")))
+
+(def app
+  (wrap-server
+   (wrap-json-response
+    (wrap-params
+     routes))))
+
+;;(def app
+;;  (wrap-defaults routes site-defaults))
+
+(defn -main [port]
+  (jetty/run-jetty app                 {:port (Integer. port)}))
+
+(defn -dev-main [port]
+  (jetty/run-jetty (wrap-reload #'app) {:port (Integer. port)}))
+
+(defn -main-script
   "Parses the original shuffled test data files, then prints in three orders.
   1. gender-lname ascending, 2. bdate ascending, 3. lname descending."
   [& args]
@@ -25,3 +69,5 @@
 
 
 (parse/file->recs "test/record_sort_gr/fs/pipe-shuffled.txt")
+
+
