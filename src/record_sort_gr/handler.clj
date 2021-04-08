@@ -12,14 +12,20 @@
 ;;                         :headers {"Content-Type" "application-json"}
 ;;                         :body {:errors nil}})
 
+(defn handle-reset-recs
+  "Reset to empty list of records"
+  [req]
+  (do
+    (mdl/reset)
+    {:status 200}))
+
 (defn handle-create-rec
   "Adds one record. Returns success status."
   [req]
   (let [line (get-in req [:params "data"])
         rec (parse/line->rec line)
         _ (mdl/create-rec rec)]
-    success-response
-    ))
+    success-response))
     
 (defn- handle-recs
   "Returns sorted records as JSON."

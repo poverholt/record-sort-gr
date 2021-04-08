@@ -2,8 +2,9 @@
 
 (def records (atom []))
 
+(defn reset [] (reset! records []))
+
 (defn create-rec [rec] (swap! records conj rec))
 
 (defn read-recs [] @records)
 
-(defn reset "For testing only." [] (reset! records []))

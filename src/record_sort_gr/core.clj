@@ -16,6 +16,7 @@
   (GET "/" [] "Test only")
   (ANY "/request" [] handle-dump)
   (POST "/records" [] hdlr/handle-create-rec)
+  (DELETE "/records" [] hdlr/handle-reset-recs)
   (GET "/records/gender" [] hdlr/handle-recs-gender)
   (GET "/records/birthdate" [] hdlr/handle-recs-bdate)
   (GET "/records/name" [] hdlr/handle-recs-lname)
