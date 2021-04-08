@@ -1,20 +1,8 @@
 (ns record-sort-gr.handler
   (:require [record-sort-gr.bdate :as bdate]
-            ;;[record-sort-gr.gender :as gdr]
             [record-sort-gr.model :as mdl]
             [record-sort-gr.parse :as parse]
             [record-sort-gr.sort :as sort]))
-
-(defn greet
-  "Handler using ring.util.response."
-  [req]
-  (response "Hello clojure world")) ;; The text gets delivered in a file that browser offers to put in downloads folder
-
-(greet {})
-
-;; (def redirect-response {:status 302
-;;                         :headers {"Location" "/records"}
-;;                         :body ""})
 
 (def success-response {:status 201
                        :headers {"Content-Type" "application-json"}

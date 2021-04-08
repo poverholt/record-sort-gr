@@ -75,3 +75,15 @@ FIXME: listing of options this app accepts.
 Run step 1 output with "lein run".
 Run step 2 server with "lein ring server". Web page will pop up. Visit heroku?
 
+## Design
+
+
+## Testing
+
+* For automated Clojure testing, run with "lein test", each source file has a corresponding test file.
+  Parse-test and sort-test are complex and have significant tests to reduce the number of tests needed
+  at the REST API level.
+* REST API testing is basic. It checks each endpoint can be reached and suitable data is returned.
+  It checks invalid endpoint and invalid record create data gets a proper error.
+  Postman help?
+  

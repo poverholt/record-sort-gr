@@ -8,22 +8,14 @@
             [record-sort-gr.sort :as sort]
             [ring.adapter.jetty :as jetty]
             [ring.handler.dump :refer [handle-dump]]
-            ;;[ring.middleware.file-info :refer [wrap-file-info]]
             [ring.middleware.json :refer [wrap-json-response]]
             [ring.middleware.params :refer [wrap-params]]
-            [ring.middleware.reload :refer [wrap-reload]]
-            ;;[ring.middleware.resource :refer [wrap-resource]]
-            ))
+            [ring.middleware.reload :refer [wrap-reload]]))
 
 (defroutes routes
-  (GET "/" [] hdlr/greet)
-  (GET "/hello" [] "Hello")
+  (GET "/" [] "Test only")
   (ANY "/request" [] handle-dump)
-;;  (GET "/records" [] hdlr/handle-recs)
   (POST "/records" [] hdlr/handle-create-rec)
-;;  (POST "/records" [] handle-dump)
-;;  (DELETE "/records/:rec-id" [] hdlr/handle-delete-rec)  TODO: Also, don't need wrap-simulated methods
-;;  (PUT "/records/:rec-id" [] hdlr/handle-update-rec)
   (GET "/records/gender" [] hdlr/handle-recs-gender)
   (GET "/records/birthdate" [] hdlr/handle-recs-bdate)
   (GET "/records/name" [] hdlr/handle-recs-lname)
