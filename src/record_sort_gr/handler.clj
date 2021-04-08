@@ -1,13 +1,9 @@
 (ns record-sort-gr.handler
-  (:require [cheshire.core :as json]
-            [compojure.core :refer :all]
-            [compojure.route :as route]
-            [record-sort-gr.bdate :as bdate]
-            [record-sort-gr.gender :as gdr]
+  (:require [record-sort-gr.bdate :as bdate]
+            ;;[record-sort-gr.gender :as gdr]
             [record-sort-gr.model :as mdl]
-            [record-sort-gr.sort :as sort]
-            [ring.middleware.defaults :refer [wrap-defaults site-defaults]]
-            [ring.util.response :refer [response file-response resource-response]]))
+            [record-sort-gr.parse :as parse]
+            [record-sort-gr.sort :as sort]))
 
 (defn greet
   "Handler using ring.util.response."
@@ -31,13 +27,9 @@
 (defn handle-create-rec
   "Adds one record. Returns success status."
   [req]
-  (let [lname (get-in req [:params "lname"]) ;; TODO: Should be a short-cut to get all 5 fields in one sweep!
-        fname (get-in req [:params "fname"])
-        gender (gdr/str->gender (get-in req [:params "gender"]))
-        color (get-in req [:params "color"])
-        bdate (bdate/str->bdate (get-in req [:params "bdate"]))
-        _ (mdl/create-rec lname fname gender color bdate)]
-    ;;redirect-response  ;; TODO: This only makes sense in a view or web page server. Not here!
+  (let [line (get-in req [:params "data"])
+        rec (parse/line->rec line)
+        _ (mdl/create-rec rec)]
     success-response
     ))
     
@@ -47,7 +39,7 @@
   (let [sorted-recs (sort-fn (mdl/read-recs))
         body (map #(update % :bdate bdate/bdate->str) sorted-recs)]
     {:status 200
-     :headers {"Content-Type" "application/json"} ;; TODO: Can we add this in route wrapper too?
+     :headers {"Content-Type" "application/json"} ;; TODO: Can we add this in route wrapper instead?
      :body body}))
 
 (defn handle-recs-gender [req] (handle-recs sort/gender))

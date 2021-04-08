@@ -5,7 +5,7 @@
 
 (def date-format (SimpleDateFormat. "MM/dd/yyyy"))
 
-(def date-error (Date. 0))
+(def date-error (Date. 0)) ; TODO: This is not a great error marker, because it is a valid date.
 
 (defn str->bdate
   [s]
