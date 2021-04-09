@@ -20,7 +20,7 @@
   (GET "/records/gender" [] hdlr/handle-recs-gender)
   (GET "/records/birthdate" [] hdlr/handle-recs-bdate)
   (GET "/records/name" [] hdlr/handle-recs-lname)
-  (not-found "<h1>The page requested does not exist.</h1>"))
+  (not-found "Route not found."))
 
 (defn wrap-server [hdlr]
   (fn [req]
