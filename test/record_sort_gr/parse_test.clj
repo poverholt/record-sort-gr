@@ -26,11 +26,11 @@
     (is (= (parse/line->rec "Doe|John   |M| Blue  |  12/31/1999") {:lname "Doe" :fname "John" :gender "M" :color "Blue" :bdate (bdate-test/date 1999 12 31)}) "Varying delimiter white space")
     (is (= (parse/line->rec "  Doe | John | M | Blue | 12/31/1999  ") {:lname "Doe" :fname "John" :gender "M" :color "Blue" :bdate (bdate-test/date 1999 12 31)}) "Surrounding white space")
     (is (= (parse/line->rec "Doe | John | M | Blue | 12/31/1999 | Extra") {:lname "Doe" :fname "John" :gender "M" :color "Blue" :bdate (bdate-test/date 1999 12 31)}) "Extra field")
-    (is (= (parse/line->rec "Doe | John | M | Blue") {:lname "Doe" :fname "John" :gender "M" :color "Blue" :bdate bdate/date-error}) "Missing last field")
-    (is (= (parse/line->rec "John | M | Blue 12/31/1999") {:lname "John" :fname "M" :gender "X" :color "12/31/1999" :bdate bdate/date-error}) "Missing first field")
-    (is (= (parse/line->rec "Doe") {:lname "Doe" :gender "X" :bdate bdate/date-error}) "One field")
-    (is (= (parse/line->rec "   ") {:lname "" :gender "X" :bdate bdate/date-error}) "White space only")
-    (is (= (parse/line->rec "") {:lname "" :gender "X" :bdate bdate/date-error}) "Empty line")))
+    (is (= (:error (parse/line->rec "Doe | John | M | Blue")) "Invalid syntax: Expected 5 data fields, but received 4.") "Missing last field")
+    (is (= (:error (parse/line->rec "John | M | Blue 12/31/1999")) "Invalid syntax: Expected 5 data fields, but received 4.") "Missing first field")
+    (is (= (:error (parse/line->rec "Doe")) "Invalid syntax: Expected 5 data fields, but received 1.") "One field")
+    (is (= (:error (parse/line->rec "   ")) "Invalid syntax: Expected 5 data fields, but received 1.") "White space only")
+    (is (= (:error (parse/line->rec "")) "Invalid syntax: Expected 5 data fields, but received 1.") "Empty line")))
 
 (defn fp [fname] (str "test/record_sort_gr/fs/" fname))
 

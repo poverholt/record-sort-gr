@@ -11,12 +11,12 @@
           s (str/lower-case s)]
       (= s valid))))
 
-(def gender-error "X")
+(def error "X")
 
 (defn str->gender [s]
   (cond
-    (empty? s) gender-error
+    (empty? s) error
     (str-start-compare s "Female") "F"
     (str-start-compare s "Male") "M"
-    :else gender-error))
+    :else error))
 

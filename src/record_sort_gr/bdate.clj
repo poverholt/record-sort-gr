@@ -5,13 +5,13 @@
 
 (def date-format (SimpleDateFormat. "MM/dd/yyyy"))
 
-(def date-error (Date. 0)) ; TODO: This is not a great error marker, because it is a valid date.
+(def error (Date. 0)) ; TODO: This is not a great error marker, because it is a valid date.
 
 (defn str->bdate
   [s]
   (try
     (.parse date-format s)
-    (catch Exception e date-error)))
+    (catch Exception e error)))
 
 (defn- strip-leading-date-0s
   [s]
