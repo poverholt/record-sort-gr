@@ -14,7 +14,7 @@
                           :body body})
 
 (defn create-success-response [rec] {:status 201
-                                     :headers {"Content-Type" "application-json"}
+                                     :headers {"Content-Type" "application/json"}
                                      :body (assoc rec :success true
                                                       :message "Record was created.")})
 
