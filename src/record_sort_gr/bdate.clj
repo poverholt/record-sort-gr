@@ -1,11 +1,12 @@
 (ns record-sort-gr.bdate
   (:require [clojure.string :as str])
   (:import [java.text SimpleDateFormat]
-           [java.util Date GregorianCalendar]))
+           [java.util Date]))
 
 (def date-format (SimpleDateFormat. "MM/dd/yyyy"))
+(.setLenient date-format false)
 
-(def error (Date. 0)) ; TODO: This is not a great error marker, because it is a valid date.
+(def error "DATE-ERROR")
 
 (defn str->bdate
   [s]

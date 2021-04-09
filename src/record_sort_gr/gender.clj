@@ -11,7 +11,7 @@
           s (str/lower-case s)]
       (= s valid))))
 
-(def error "X")
+(def error "GENDER-ERROR")
 
 (defn str->gender [s]
   (cond

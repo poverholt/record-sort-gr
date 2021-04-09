@@ -22,11 +22,6 @@
                                    :headers {"Content-Type" "application/json"} ;; TODO: Can we add this in route wrapper instead?
                                    :body body})
 
-
-;; Invalid syntax: No 'data' parameter found.
-;; Field count mismatch. Expected x fields, but received y fields.
-;; Invalid gender format. The following case-insensitive values are valid: f, female, m, male.
-;; Invalid date format. Date must be in format mm/dd/yyyy. Single character month and date are allowed.
 (defn handle-reset-recs
   "Reset to empty list of records"
   [req]

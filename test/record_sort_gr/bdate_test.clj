@@ -14,8 +14,8 @@
     (is (= (bdate/str->bdate "12/31/1999") (date 1999 12 31)))
     (is (= (bdate/str->bdate " 12/31/1999 ") (date 1999 12 31)))
     (is (= (bdate/str->bdate "12-31-1999") bdate/error))
-    (is (= (bdate/str->bdate "31/12/1999") (date 2001 7 12)) "Warning: Day/Month transpositions not caught.")
-    (is (= (bdate/str->bdate "1999/12/31") (date 197 7 12)) "Warning: Year/Month/Day transpositions not caught.")
+    (is (= (bdate/str->bdate "31/12/1999") bdate/error))
+    (is (= (bdate/str->bdate "1999/12/31") bdate/error))
     (is (= (bdate/str->bdate "BAD") bdate/error))
     (is (= (bdate/str->bdate " ") bdate/error))
     (is (= (bdate/str->bdate "") bdate/error))
@@ -23,6 +23,5 @@
 
 (deftest bdate-str-test
   (testing "Testing bdate->str"
-    (is (= (bdate/bdate->str (date 1643 1 4)) "1/4/1643")) ; Requirements indicate this cannot be 01/04/1643
-    (is (= (bdate/bdate->str (date 1999 12 31)) "12/31/1999"))
-    (is (= (bdate/bdate->str bdate/error) "12/31/1969")))) ; TODO: Need non-valid error code!
+    (is (= (bdate/bdate->str (date 1643 1 4)) "1/4/1643")) ; Requirements indicate this must not be 01/04/1643
+    (is (= (bdate/bdate->str (date 1999 12 31)) "12/31/1999"))))
