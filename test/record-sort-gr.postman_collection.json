@@ -1,0 +1,869 @@
+{
+	"info": {
+		"_postman_id": "c01c7b9c-69da-406e-8370-445c372b3a10",
+		"name": "record-sort-gr",
+		"description": "Testing record-sort-gr API, a system to parse and sort a set of records.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Root",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status test\", function() {",
+							"    pm.response.to.have.status(200);",
+							"})",
+							"",
+							"pm.test(\"Response test\", function() {",
+							"    pm.response.to.have.body(\"Test only\");",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						""
+					]
+				},
+				"description": "Test root returns the greeting."
+			},
+			"response": []
+		},
+		{
+			"name": "dump",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status test\", function() {",
+							"    pm.response.to.have.status(200);",
+							"})",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/request",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"request"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Reset initial",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status test\", function() {",
+							"    pm.response.to.have.status(200);",
+							"})",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/records",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"records"
+					]
+				},
+				"description": "Reset list of records"
+			},
+			"response": []
+		},
+		{
+			"name": "Get /records/gender Empty",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Content-Type header is application/json\", () => {",
+							"  pm.expect(pm.response.headers.get('Content-Type')).to.eql('application/json');",
+							"});",
+							"",
+							"pm.test(\"Response data empty\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.length).to.eql(0);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/records/gender",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"records",
+						"gender"
+					]
+				},
+				"description": "Get records in order gender (female before male), the last name ascending."
+			},
+			"response": []
+		},
+		{
+			"name": "Missing data param",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status test\", function() {",
+							"    pm.response.to.have.status(400);",
+							"})",
+							"",
+							"pm.test(\"Content-Type header is application/json\", () => {",
+							"  pm.expect(pm.response.headers.get('Content-Type')).to.eql('application/json');",
+							"});",
+							"",
+							"pm.test(\"Response test\", function() {",
+							"    pm.response.to.have.jsonBody(\"error\");",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/records",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"records"
+					]
+				},
+				"description": "Build up the /records path."
+			},
+			"response": []
+		},
+		{
+			"name": "Missing fields",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status test\", function() {",
+							"    pm.response.to.have.status(400);",
+							"})",
+							"",
+							"pm.test(\"Content-Type header is application/json\", () => {",
+							"  pm.expect(pm.response.headers.get('Content-Type')).to.eql('application/json');",
+							"});",
+							"",
+							"pm.test(\"Response test\", function() {",
+							"    pm.response.to.have.jsonBody(\"error\");",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/records?data=1969/7/20",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"records"
+					],
+					"query": [
+						{
+							"key": "data",
+							"value": "1969/7/20"
+						}
+					]
+				},
+				"description": "Create a new record using bad data"
+			},
+			"response": []
+		},
+		{
+			"name": "Bad data",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status test\", function() {",
+							"    pm.response.to.have.status(400);",
+							"})",
+							"",
+							"pm.test(\"Content-Type header is application/json\", () => {",
+							"  pm.expect(pm.response.headers.get('Content-Type')).to.eql('application/json');",
+							"});",
+							"",
+							"pm.test(\"Response test\", function() {",
+							"    pm.response.to.have.jsonBody(\"error\");",
+							"})",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/records?data=DeGraw, Gavin, unknown, Pink, 1969/07/20",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"records"
+					],
+					"query": [
+						{
+							"key": "data",
+							"value": "DeGraw, Gavin, unknown, Pink, 1969/07/20"
+						}
+					]
+				},
+				"description": "Post create record with correct number of fields, but invalid field data."
+			},
+			"response": []
+		},
+		{
+			"name": "Bad date syntax",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status test\", function() {",
+							"    pm.response.to.have.status(400);",
+							"})",
+							"",
+							"pm.test(\"Content-Type header is application/json\", () => {",
+							"  pm.expect(pm.response.headers.get('Content-Type')).to.eql('application/json');",
+							"});",
+							"",
+							"pm.test(\"Response test\", function() {",
+							"    pm.response.to.have.jsonBody(\"error\");",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/records?data=DeGraw, Gavin, male, light-blue, 1969/07/20",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"records"
+					],
+					"query": [
+						{
+							"key": "data",
+							"value": "DeGraw, Gavin, male, light-blue, 1969/07/20"
+						}
+					]
+				},
+				"description": "Post create record with correct number of fields, but invalid field data."
+			},
+			"response": []
+		},
+		{
+			"name": "Get /records/gender Still Empty",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Content-Type header is application/json\", () => {",
+							"  pm.expect(pm.response.headers.get('Content-Type')).to.eql('application/json');",
+							"});",
+							"",
+							"pm.test(\"Response data empty\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.length).to.eql(0);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/records/gender",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"records",
+						"gender"
+					]
+				},
+				"description": "Get records in order gender (female before male), the last name ascending."
+			},
+			"response": []
+		},
+		{
+			"name": "Create record 1",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response test\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.success).to.eql(true);",
+							"});",
+							"",
+							"pm.test(\"Content-Type header is application/json\", () => {",
+							"  pm.expect(pm.response.headers.get('Content-Type')).to.eql('application/json');",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/records?data=Metheny|Pat|Male|green|8/12/1954",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"records"
+					],
+					"query": [
+						{
+							"key": "data",
+							"value": "Metheny|Pat|Male|green|8/12/1954"
+						}
+					]
+				},
+				"description": "Create valid male record."
+			},
+			"response": []
+		},
+		{
+			"name": "Create record 2",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response test\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.success).to.eql(true);",
+							"});",
+							"",
+							"pm.test(\"Content-Type header is application/json\", () => {",
+							"  pm.expect(pm.response.headers.get('Content-Type')).to.eql('application/json');",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/records?data=cummings,e.e.,m,light-gray,10/14/1894",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"records"
+					],
+					"query": [
+						{
+							"key": "data",
+							"value": "cummings,e.e.,m,light-gray,10/14/1894"
+						}
+					]
+				},
+				"description": "Create valid male record."
+			},
+			"response": []
+		},
+		{
+			"name": "Create record 3",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response test\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.success).to.eql(true);",
+							"});",
+							"",
+							"pm.test(\"Content-Type header is application/json\", () => {",
+							"  pm.expect(pm.response.headers.get('Content-Type')).to.eql('application/json');",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/records?data=O'Conner Sinead Fe cyan  12/8/1966",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"records"
+					],
+					"query": [
+						{
+							"key": "data",
+							"value": "O'Conner Sinead Fe cyan  12/8/1966"
+						}
+					]
+				},
+				"description": "Create valid male record."
+			},
+			"response": []
+		},
+		{
+			"name": "Create record 4",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response test\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.success).to.eql(true);",
+							"});",
+							"",
+							"pm.test(\"Content-Type header is application/json\", () => {",
+							"  pm.expect(pm.response.headers.get('Content-Type')).to.eql('application/json');",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/records?data=Bailey-Rae|Corrine|Female|RED|2/26/1979",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"records"
+					],
+					"query": [
+						{
+							"key": "data",
+							"value": "Bailey-Rae|Corrine|Female|RED|2/26/1979"
+						}
+					]
+				},
+				"description": "Create valid male record."
+			},
+			"response": []
+		},
+		{
+			"name": "no-endpoint",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status test\", function () {",
+							"    pm.response.to.have.status(404);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/nowhere",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"nowhere"
+					]
+				},
+				"description": "Test basic path."
+			},
+			"response": []
+		},
+		{
+			"name": "Get /records/gender",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Content-Type header is application/json\", () => {",
+							"  pm.expect(pm.response.headers.get('Content-Type')).to.eql('application/json');",
+							"});",
+							"",
+							"pm.test(\"Response first data\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData[0].lname).to.eql(\"Bailey-Rae\");",
+							"});",
+							"",
+							"pm.test(\"Response data at 4 records\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.length).to.eql(4);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/records/gender",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"records",
+						"gender"
+					]
+				},
+				"description": "Get records in order gender (female before male), the last name ascending."
+			},
+			"response": []
+		},
+		{
+			"name": "Get /records/birthdate",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Content-Type header is application/json\", () => {",
+							"  pm.expect(pm.response.headers.get('Content-Type')).to.eql('application/json');",
+							"});",
+							"",
+							"pm.test(\"Response first data\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData[0].lname).to.eql(\"cummings\");",
+							"});",
+							"",
+							"pm.test(\"Response data at 4 records\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.length).to.eql(4);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/records/birthdate",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"records",
+						"birthdate"
+					]
+				},
+				"description": "Get records in order gender (female before male), the last name ascending."
+			},
+			"response": []
+		},
+		{
+			"name": "Get /records/name",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Content-Type header is application/json\", () => {",
+							"  pm.expect(pm.response.headers.get('Content-Type')).to.eql('application/json');",
+							"});",
+							"",
+							"pm.test(\"Response first data\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData[0].lname).to.eql(\"O'Conner\");",
+							"});",
+							"",
+							"pm.test(\"Response data at 4 records\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.length).to.eql(4);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/records/name",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"records",
+						"name"
+					]
+				},
+				"description": "Get records in order gender (female before male), the last name ascending."
+			},
+			"response": []
+		},
+		{
+			"name": "Create record 1 again",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response test\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.success).to.eql(true);",
+							"});",
+							"",
+							"pm.test(\"Content-Type header is application/json\", () => {",
+							"  pm.expect(pm.response.headers.get('Content-Type')).to.eql('application/json');",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/records?data=Metheny|Pat|Male|green|8/12/1954",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"records"
+					],
+					"query": [
+						{
+							"key": "data",
+							"value": "Metheny|Pat|Male|green|8/12/1954"
+						}
+					]
+				},
+				"description": "Create valid male record."
+			},
+			"response": []
+		},
+		{
+			"name": "Get /records/gender Duplicates",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Content-Type header is application/json\", () => {",
+							"  pm.expect(pm.response.headers.get('Content-Type')).to.eql('application/json');",
+							"});",
+							"",
+							"pm.test(\"Response first data\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData[0].lname).to.eql(\"Bailey-Rae\");",
+							"});",
+							"",
+							"pm.test(\"Response data includes duplicates\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.length).to.eql(5);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/records/gender",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"records",
+						"gender"
+					]
+				},
+				"description": "Get records in order gender (female before male), the last name ascending."
+			},
+			"response": []
+		},
+		{
+			"name": "Reset final",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status test\", function() {",
+							"    pm.response.to.have.status(200);",
+							"})",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/records",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"records"
+					]
+				},
+				"description": "Reset list of records"
+			},
+			"response": []
+		},
+		{
+			"name": "Get /records/gender Empty Again",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Content-Type header is application/json\", () => {",
+							"  pm.expect(pm.response.headers.get('Content-Type')).to.eql('application/json');",
+							"});",
+							"",
+							"pm.test(\"Response data empty\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.length).to.eql(0);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/records/gender",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"records",
+						"gender"
+					]
+				},
+				"description": "Get records in order gender (female before male), the last name ascending."
+			},
+			"response": []
+		}
+	]
+}
