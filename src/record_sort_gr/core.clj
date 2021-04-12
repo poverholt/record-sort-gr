@@ -32,16 +32,7 @@
     (wrap-params
      routes))))
 
-;;(def app
-;;  (wrap-defaults routes site-defaults))
-
-(defn -main [port]
-  (jetty/run-jetty app                 {:port (Integer. port)}))
-
-(defn -dev-main [port]
-  (jetty/run-jetty (wrap-reload #'app) {:port (Integer. port)}))
-
-(defn -main-script
+(defn step-1-output
   "Parses the original shuffled test data files, then prints in three orders.
   1. gender-lname ascending, 2. bdate ascending, 3. lname descending."
   [& args]
@@ -59,6 +50,18 @@
                          ["" "Sorted by Lastname Descending" "-----------------------------"]
                          lname-sorted-lines)]
       (println line))))
+
+
+(defn -main [& ports]
+  "If port is given, the API Record Sort GR server is run at that port.
+   If port is not given, the step 1 output test is run."
+  (if ports
+    (jetty/run-jetty app               {:port (Integer. (first ports))})
+    (step-1-output)))
+
+(defn -dev-main [port]
+  "Runs the API Record Sort GR server with debugging features."
+  (jetty/run-jetty (wrap-reload #'app) {:port (Integer. port)}))
 
 
 

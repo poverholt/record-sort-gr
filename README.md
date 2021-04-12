@@ -2,6 +2,12 @@
 
 A system to parse and sort a set of records.
 
+- [Requirements](##Requirements)
+- [API](##API)
+- [Installation](##Installation)
+- [Usage](##Usage)
+- [Testing](##Testing)
+
 ## Requirements
 
 ### Step 1 - Build a system to parse and sort a set of records
@@ -52,38 +58,72 @@ These endpoints should return JSON.
 
 To keep it simple, don't worry about using a persistent datastore.
 
+## API
+
+Here are some notes on the final API, in addition to those specified in the requirements above.
+
+* The returned JSON-format records have the following keys: "lname", "fname", "gender", "color", "bdate".
+* POST to /records will respond with the created record in JSON format if possible, along with field
+"success" or "error", for successful and failed attempts respectively. The success value is a boolean
+The error value can be a string or a vector of strings, when multiple errors are reported.
+* The following endpoints were added to help with testing...
+  * DELETE /records - reset the records list to empty
+  * GET / - returns a test string
+  * ANY /request - returns the request for debugging. The response body is  HTML.
+* Duplicate records are accepted by the POST to /records.
+
+### Possible Improvements
+
+* Avoid genuine duplicates by including a unique ID field or adding a UUID during record creation,
+although the latter still does not avoid the same person enter there details twice.
+* Make response to POST /records more consistent.
+* Use Swagger to document the API.
+
 ## Installation
 
-Download from http://example.com/FIXME.
+The server and its test client server are already installed on Heroku...
+* TODO with port #. API
+* TODO with port #. client
+
+The server and test client projects are available on GitHub for download...
+* https://github.com/poverholt/record-sort-gr
+* https://github.com/poverholt/record-sort-gr-client
 
 ## Usage
 
-FIXME: explanation
+Visit the Herokku sites mentioned above to use the existing installations.
 
-    $ java -jar blah-0.1.0-standalone.jar [args]
-
-## Options
-
-FIXME: listing of options this app accepts.
-
-## Examples
-
-...
-
-## Run
-
-Run step 1 output with "lein run".
-Run step 2 server with "lein ring server". Web page will pop up. Visit heroku?
-
-## Design
-
+To use the download project...
+* lein run - will print step 1 output to *out*
+* lein run 8000 - will start the Record Sort GR server at http://localhost:8000
+  * lein run port - any port can be used, but the test client will target port 8000
+  * See [Testing](##Testing) for ways to use the server
+* TODO: $ java -jar blah-0.1.0-standalone.jar [args]
 
 ## Testing
 
-* For automated Clojure testing, run with "lein test", each source file has a corresponding test file.
-  Parse-test and sort-test are complex and have significant tests to reduce the number of tests needed
-  at the REST API level.
-* REST API testing is basic. It checks each endpoint can be reached and suitable data is returned.
-  It checks invalid endpoint and invalid record create data gets a proper error.
-  Postman help?
-  
+### Clojure.test
+
+For automated Clojure testing, run with "lein test", each source file has a corresponding test file.
+As much as possible, the testing and corner case testing is done in parse-test and sort-test.
+This limits the testing needed elsewhere. Testing in other Clojure test files and in the Postman
+API test files are as sparse as is reasonable.
+
+### Postman API Testing
+
+REST API testing with Postman is basic. It checks each endpoint can be reached and suitable data is
+returned. It checks that an invalid endpoint and invalid record creation data gets a proper error.
+It checks that the record count is always correct through a sequence of resetting the record list,
+attempting to add invalid records, adding valid records, adding a duplicate record, then finally
+resetting the record list again.
+
+The Postman test collection and test environments files can be found at /test of the project.
+One environment is for http://localhost:8000 and one is for heroku location. TODO.
+To use these, you must import them into a Postman installation. Note that the localhost
+environment can only be used with the desktop installation of Postman.
+
+### Test Client
+
+A test client is available as a GitHub project and as a heroku installation...
+* https://github.com/poverholt/record-sort-gr-client
+* TODO: heroku
