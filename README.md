@@ -2,11 +2,11 @@
 
 A system to parse and sort a set of records.
 
-- [Requirements](https://github.com/poverholt/record-sort-gr/blob/main/README.md##Requirements)
-- [API](https://github.com/poverholt/record-sort-gr/blob/main/README.md##API)
-- [Installation](https://github.com/poverholt/record-sort-gr/blob/main/README.md##Installation)
-- [Usage](https://github.com/poverholt/record-sort-gr/blob/main/README.md##Usage)
-- [Testing](https://github.com/poverholt/record-sort-gr/blob/main/README.md##Testing)
+- [Requirements](#requirements)
+- [API](#api)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Testing](#testing)
 
 ## Requirements
 
