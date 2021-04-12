@@ -30,6 +30,18 @@
       (append-error rec (str "Invalid date format: " date-input ". Date must be in format mm/dd/yyyy. Single character month and date are allowed."))
       rec)))
 
+(defn empty-check
+  "Check for empty fields."
+  [rec field-key]
+  (if (str/blank? (field-key rec))
+    (append-error rec (str "Empty field not allowed: " field-key))
+    rec))
+
+(defn count-filled
+  "Count non-blank fields."
+  [rec]
+  (count (remove (fn [[k v]] (str/blank? v)) rec)))
+
 (defn _line->rec
   [line]
   (zipmap [:lname :fname :gender :color :bdate]
@@ -47,10 +59,13 @@
   (if (= nil line)
     {:error "Invalid syntax: No data."}
     (let [rec (_line->rec line)
-          cnt (count rec)]
+          cnt (count-filled rec)]
       (if (not= cnt 5)
         (assoc rec :error (str "Invalid syntax: Expected 5 data fields, but received " cnt "."))
         (-> rec
+            (empty-check :lname)
+            (empty-check :fname)
+            (empty-check :color)
             standardize-gender
             standardize-bdate)))))
 

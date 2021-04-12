@@ -24,7 +24,7 @@
 
 (defn wrap-server [hdlr]
   (fn [req]
-    (assoc-in (hdlr req) [:headers "Server"] "Listronica 9000")))
+    (assoc-in (hdlr req) [:headers "Server"] "Record Sort GR")))
 
 (def app
   (wrap-server

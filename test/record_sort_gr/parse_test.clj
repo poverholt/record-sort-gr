@@ -4,6 +4,17 @@
             [record-sort-gr.bdate-test :as bdate-test])
   (:use clojure.test))
 
+(deftest append-error-test
+  (testing "Testing append-error"
+    (is (= (parse/append-error {:field "field"} "err") {:field "field" :error "err"}))
+    (is (= (parse/append-error {:field "field" :error "err1"} "err2") {:field "field" :error ["err1" "err2"]}))
+    (is (= (parse/append-error {:field "field" :error ["err1" "err2"]} "err3") {:field "field" :error ["err1" "err2" "err3"]}))))
+
+(deftest count-filled-test
+  (testing "Testing count-filled"
+    (is (= (parse/count-filled {}) 0) "No fields")
+    (is (= (parse/count-filled {:one "one" :two "" :three "  " :four nil :five "five"}) 2) "Some fields")))
+
 (deftest _line-rec-test
   (testing "Testing _line->rec"
     (is (= (parse/_line->rec "Doe | John | Male | Blue | 12/31/1999") {:lname "Doe" :fname "John" :gender "Male" :color "Blue" :bdate "12/31/1999"}) "Pipe delimiter")
@@ -29,8 +40,8 @@
     (is (= (:error (parse/line->rec "Doe | John | M | Blue")) "Invalid syntax: Expected 5 data fields, but received 4.") "Missing last field")
     (is (= (:error (parse/line->rec "John | M | Blue 12/31/1999")) "Invalid syntax: Expected 5 data fields, but received 4.") "Missing first field")
     (is (= (:error (parse/line->rec "Doe")) "Invalid syntax: Expected 5 data fields, but received 1.") "One field")
-    (is (= (:error (parse/line->rec "   ")) "Invalid syntax: Expected 5 data fields, but received 1.") "White space only")
-    (is (= (:error (parse/line->rec "")) "Invalid syntax: Expected 5 data fields, but received 1.") "Empty line")))
+    (is (= (:error (parse/line->rec "   ")) "Invalid syntax: Expected 5 data fields, but received 0.") "White space only")
+    (is (= (:error (parse/line->rec "")) "Invalid syntax: Expected 5 data fields, but received 0.") "Empty line")))
 
 (defn fp [fname] (str "test/record_sort_gr/fs/" fname))
 
