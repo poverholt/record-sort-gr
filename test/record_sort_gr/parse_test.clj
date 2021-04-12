@@ -39,6 +39,7 @@
     (is (= (parse/line->rec "Doe | John | M | Blue | 12/31/1999 | Extra") {:lname "Doe" :fname "John" :gender "M" :color "Blue" :bdate (bdate-test/date 1999 12 31)}) "Extra field")
     (is (= (:error (parse/line->rec "Doe | John | M | Blue")) "Invalid syntax: Expected 5 data fields, but received 4.") "Missing last field")
     (is (= (:error (parse/line->rec "John | M | Blue 12/31/1999")) "Invalid syntax: Expected 5 data fields, but received 4.") "Missing first field")
+    (is (= (:error (parse/line->rec "Doe||m||12/31/1999")) "Invalid syntax: Expected 5 data fields, but received 3.") "Missing middle fields")
     (is (= (:error (parse/line->rec "Doe")) "Invalid syntax: Expected 5 data fields, but received 1.") "One field")
     (is (= (:error (parse/line->rec "   ")) "Invalid syntax: Expected 5 data fields, but received 0.") "White space only")
     (is (= (:error (parse/line->rec "")) "Invalid syntax: Expected 5 data fields, but received 0.") "Empty line")))
