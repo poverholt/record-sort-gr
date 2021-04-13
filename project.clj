@@ -13,6 +13,7 @@
   :source-paths ["src"]
   :test-paths ["test"]
   :target-path "target/%s"
+  :uberjar-name "record-sort-gr.jar"
   :main ^:skip-aot record-sort-gr.core
   :repl-options {:init-ns record-sort-gr.core}
   

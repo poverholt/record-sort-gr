@@ -66,6 +66,11 @@ Here are some notes on the final API, in addition to those specified in the requ
 * POST to /records will respond with the created record in JSON format if possible, along with field
 "success" or "error", for successful and failed attempts respectively. The success value is a boolean
 The error value can be a string or a vector of strings, when multiple errors are reported.
+* POST to /records will be rejected if...
+  * Gender is not some non-blank substring of "female" or "male", case-insensitive.
+    * m, M, male, MALE, f, F, FEM, female are all valid.
+  * Birthdate does not meet required MM/DD/YYYY.
+  * LastName, FirstName or FavoriteColor are missing or white-space only.
 * The following endpoints were added to help with testing...
   * DELETE /records - reset the records list to empty
   * GET / - returns a test string
@@ -75,30 +80,42 @@ The error value can be a string or a vector of strings, when multiple errors are
 ### Possible Improvements
 
 * Avoid genuine duplicates by including a unique ID field or adding a UUID during record creation,
-although the latter still does not avoid the same person enter there details twice.
+although the latter still does not avoid the same person enter their details twice.
 * Make response to POST /records more consistent.
 * Use Swagger to document the API.
 
 ## Installation
 
 The server and its test client server are already installed on Heroku...
-* TODO with port #. API
-* TODO with port #. client
+* https://record-sort-gr.herokuapp.com/
+* https://record-sort-gr-client.herokuapp.com/
 
 The server and test client projects are available on GitHub for download...
-* https://github.com/poverholt/record-sort-gr
-* https://github.com/poverholt/record-sort-gr-client
+* https://github.com/poverholt/record-sort-gr/
+* https://github.com/poverholt/record-sort-gr-client/
 
 ## Usage
 
-Visit the Herokku sites mentioned above to use the existing installations.
+Visit the Heroku sites mentioned above to use the existing installations.
 
-To use the download project...
-* lein run - will print step 1 output to *out*
-* lein run 8000 - will start the Record Sort GR server at http://localhost:8000
-  * lein run port - any port can be used, but the test client will target port 8000
+To use the downloaded project...
+* lein run [args?]
+* lein repl, (-main [args?])
+* $java $JVM_OPTS -cp target/uberjar/record-sort-gr.jar clojure.main -m record-sort-gr.core [args?]
+* $java $JVM_OPTS -cp <path-to-jar> clojure.main -m record-sort-gr.core [args?] => if you moved the jar
   * See [Testing](##Testing) for ways to use the server
-* TODO: $ java -jar blah-0.1.0-standalone.jar [args]
+
+### Options
+
+Without arguments, the server defaults to port 8000.
+You can override the default server port in two ways...
+* PORT environment variable
+* As an argument, for example, *lein run 5000*
+
+It is recommended not to override defaults. This will work best both locally and on Heroku.
+
+A port of -1 is a special case that, instead of running the server, will print assignment step 1
+output to \*out\*.
 
 ## Testing
 
@@ -118,12 +135,17 @@ attempting to add invalid records, adding valid records, adding a duplicate reco
 resetting the record list again.
 
 The Postman test collection and test environments files can be found at /test of the project.
-One environment is for http://localhost:8000 and one is for heroku location. TODO.
+One environment is for http://localhost:8000 and one is for Heroku location. TODO.
 To use these, you must import them into a Postman installation. Note that the localhost
 environment can only be used with the desktop installation of Postman.
 
 ### Test Client
 
-A test client is available as a GitHub project and as a heroku installation...
-* https://github.com/poverholt/record-sort-gr-client
-* TODO: heroku
+A test client is available as a GitHub project and as a Heroku installation...
+* https://github.com/poverholt/record-sort-gr-client/
+* https://record-sort-gr-client.herokuapp.com/
+
+### Possible Improvements
+
+Test for performance with large data files.
+Test with slow or broken networks or simulations thereof.

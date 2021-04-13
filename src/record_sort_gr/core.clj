@@ -50,14 +50,15 @@
                          ["" "Sorted by Lastname Descending" "-----------------------------"]
                          lname-sorted-lines)]
       (println line))))
-
-
-(defn -main [& ports]
-  "If port is given, the API Record Sort GR server is run at that port.
-   If port is not given, the step 1 output test is run."
-  (if ports
-    (jetty/run-jetty app               {:port (Integer. (first ports))})
-    (step-1-output)))
+  
+(defn -main [& [port]]
+  "If port is -1, a special case, the step 1 output test is run.
+   Otherwise, the API Record Sort GR server at either PORT env var, argument port or
+   default port 8000, in that order. Env var is defined & used by Heroku."
+  (let [port (Integer. (or (System/getenv "PORT") port 8000))]
+    (if (= port -1)
+      (step-1-output)
+      (jetty/run-jetty app {:port port}))))
 
 (defn -dev-main [port]
   "Runs the API Record Sort GR server with debugging features."
