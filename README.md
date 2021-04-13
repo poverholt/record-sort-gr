@@ -64,7 +64,7 @@ Here are some notes on the final API, in addition to those specified in the requ
 
 * The returned JSON-format records have the following keys: "lname", "fname", "gender", "color", "bdate".
 * POST to /records will respond with the created record in JSON format if possible, along with field
-"success" or "error", for successful and failed attempts respectively. The success value is a boolean
+"success" or "error", for successful and failed attempts respectively. The success value is a boolean.
 The error value can be a string or a vector of strings, when multiple errors are reported.
 * POST to /records will be rejected if...
   * Gender is not some non-blank substring of "female" or "male", case-insensitive.
@@ -99,10 +99,10 @@ The server and test client projects are available on GitHub for download...
 Visit the Heroku sites mentioned above to use the existing installations.
 
 To use the downloaded project...
-* lein run [args?]
-* lein repl, (-main [args?])
-* $java $JVM_OPTS -cp target/uberjar/record-sort-gr.jar clojure.main -m record-sort-gr.core [args?]
-* $java $JVM_OPTS -cp <path-to-jar> clojure.main -m record-sort-gr.core [args?] => if you moved the jar
+* lein run [args]
+* lein repl, (-main [args])
+* $java $JVM_OPTS -cp target/uberjar/record-sort-gr.jar clojure.main -m record-sort-gr.core [args]
+* $java $JVM_OPTS -cp `<path-to-jar>` clojure.main -m record-sort-gr.core [args] => if you moved the jar
   * See [Testing](##Testing) for ways to use the server
 
 ### Options
