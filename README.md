@@ -135,7 +135,7 @@ attempting to add invalid records, adding valid records, adding a duplicate reco
 resetting the record list again.
 
 The Postman test collection and test environments files can be found at /test of the project.
-One environment is for http://localhost:8000 and one is for Heroku location. TODO.
+One environment targets http://localhost:8000 and one targets the Heroku record server installation.
 To use these, you must import them into a Postman installation. Note that the localhost
 environment can only be used with the desktop installation of Postman.
 

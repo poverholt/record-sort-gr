@@ -42,7 +42,82 @@
 			"response": []
 		},
 		{
-			"name": "dump",
+			"name": "no-endpoint",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status test\", function () {",
+							"    pm.response.to.have.status(404);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/nowhere",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"nowhere"
+					]
+				},
+				"description": "Test basic path."
+			},
+			"response": []
+		},
+		{
+			"name": "dump-get",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status test\", function() {",
+							"    pm.response.to.have.status(200);",
+							"})",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "data",
+							"value": "Bailey-Rae|Corrine|Female|RED|2/26/1979",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{host}}/request",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"request"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "dump-post",
 			"event": [
 				{
 					"listen": "test",
@@ -58,8 +133,18 @@
 				}
 			],
 			"request": {
-				"method": "GET",
+				"method": "POST",
 				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "data",
+							"value": "Bailey-Rae|Corrine|Female|RED|2/26/1979",
+							"type": "text"
+						}
+					]
+				},
 				"url": {
 					"raw": "{{host}}/request",
 					"host": [
@@ -385,19 +470,23 @@
 			"request": {
 				"method": "POST",
 				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "data",
+							"value": "Metheny|Pat|Male|green|8/12/1954",
+							"type": "text"
+						}
+					]
+				},
 				"url": {
-					"raw": "{{host}}/records?data=Metheny|Pat|Male|green|8/12/1954",
+					"raw": "{{host}}/records",
 					"host": [
 						"{{host}}"
 					],
 					"path": [
 						"records"
-					],
-					"query": [
-						{
-							"key": "data",
-							"value": "Metheny|Pat|Male|green|8/12/1954"
-						}
 					]
 				},
 				"description": "Create valid male record."
@@ -427,19 +516,23 @@
 			"request": {
 				"method": "POST",
 				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "data",
+							"value": "cummings,e.e.,m,light-gray,10/14/1894",
+							"type": "text"
+						}
+					]
+				},
 				"url": {
-					"raw": "{{host}}/records?data=cummings,e.e.,m,light-gray,10/14/1894",
+					"raw": "{{host}}/records",
 					"host": [
 						"{{host}}"
 					],
 					"path": [
 						"records"
-					],
-					"query": [
-						{
-							"key": "data",
-							"value": "cummings,e.e.,m,light-gray,10/14/1894"
-						}
 					]
 				},
 				"description": "Create valid male record."
@@ -470,19 +563,23 @@
 			"request": {
 				"method": "POST",
 				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "data",
+							"value": "O'Conner Sinead Fe cyan  12/8/1966",
+							"type": "text"
+						}
+					]
+				},
 				"url": {
-					"raw": "{{host}}/records?data=O'Conner Sinead Fe cyan  12/8/1966",
+					"raw": "{{host}}/records",
 					"host": [
 						"{{host}}"
 					],
 					"path": [
 						"records"
-					],
-					"query": [
-						{
-							"key": "data",
-							"value": "O'Conner Sinead Fe cyan  12/8/1966"
-						}
 					]
 				},
 				"description": "Create valid male record."
@@ -513,53 +610,26 @@
 			"request": {
 				"method": "POST",
 				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "data",
+							"value": "Bailey-Rae|Corrine|Female|RED|2/26/1979",
+							"type": "text"
+						}
+					]
+				},
 				"url": {
-					"raw": "{{host}}/records?data=Bailey-Rae|Corrine|Female|RED|2/26/1979",
+					"raw": "{{host}}/records",
 					"host": [
 						"{{host}}"
 					],
 					"path": [
 						"records"
-					],
-					"query": [
-						{
-							"key": "data",
-							"value": "Bailey-Rae|Corrine|Female|RED|2/26/1979"
-						}
 					]
 				},
 				"description": "Create valid male record."
-			},
-			"response": []
-		},
-		{
-			"name": "no-endpoint",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Status test\", function () {",
-							"    pm.response.to.have.status(404);",
-							"});"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "{{host}}/nowhere",
-					"host": [
-						"{{host}}"
-					],
-					"path": [
-						"nowhere"
-					]
-				},
-				"description": "Test basic path."
 			},
 			"response": []
 		},
